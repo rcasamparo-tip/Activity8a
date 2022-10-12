@@ -1,0 +1,60 @@
+---
+- name: Install Docker dependencies (Ubuntu)
+  apt:
+    name:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - gnupg
+      - lsb-release
+      - software-properties-common
+      - python3
+      - python3-pip
+    state: latest
+
+- name: Get PGP Key (Ubuntu)
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+
+- name: Add Docker repository into sources list (Ubuntu)
+  apt_repository:
+    repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable
+    state: present
+    update_cache: yes
+
+- name: Install Docker (Ubuntu)
+  apt:
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+    state: latest
+
+- name: Install Docker Modules using pip 
+  pip:
+    name: docker
+
+- name: Run daemon-reload for Docker (Ubuntu)
+  systemd: daemon_reload=yes
+
+- name: Enable Docker service (Ubuntu)
+  systemd:
+    name: docker
+    enabled: yes
+    masked: no
+
+- name: ensure docker is running (Ubuntu)
+  systemd: state=started name=docker
+
+- name: Check Dockergroup if present (Ubuntu)
+  group:
+    name: docker
+    state: present
+
+- name: Add User to Dockergroup (Ubuntu)
+  user:
+    name: rcasamparo-tip
+    groups: docker
+    append: yes
+    

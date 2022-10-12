@@ -1,0 +1,44 @@
+---
+- name: Create Docker Directory in remote (Ubuntu)
+  file:
+    path: docker
+    state: latest
+
+- name: Copy Host Docker Directory to remote (Ubuntu)
+  copy:
+    src: docker/
+    dest: docker/
+
+- name: Build web server (Ubuntu)
+  docker_image:
+    name: apache
+    build:
+      path: docker/apache
+      pull: no 
+    state: present
+    source: build
+
+- name: Build Database server Docker (Ubuntu)
+  docker_image:
+    name: mysql
+    build:
+      path: docker/mysql
+      pull: no 
+    state: present
+    source: build
+
+- name: Run Web Server Container (Ubuntu) 
+  docker_container:
+    name: webserver
+    image: apache:latest
+    state: started
+    ports: 80:80
+
+- name: Run Database Server Container (Ubuntu) 
+  docker_container:
+    name: dbserver
+    image: mysql:latest
+    published_ports: 3306:3306
+
+
+    

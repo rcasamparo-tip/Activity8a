@@ -1,0 +1,14 @@
+---
+- hosts: all
+  pre_tasks:
+
+  - name: Update Repository Index (Ubuntu)
+    tags: always
+    apt:
+      update_cache: yes
+    changed_when: false
+  
+  - hosts: ubuntu
+    roles:
+      - install_docker
+      - docker_web_db
